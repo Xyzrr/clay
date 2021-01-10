@@ -3,6 +3,7 @@ import React from "react";
 
 export interface ClayProps {
   className?: string;
+  id: string;
 }
 
 const Clay: React.FC<ClayProps> = ({ className }) => {
