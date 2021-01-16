@@ -2,8 +2,10 @@ import * as S from "./Clay.styles";
 import React from "react";
 import { createEditor, Node } from "slate";
 import { withHistory } from "slate-history";
-import { Slate, Editable, withReact } from "slate-react";
+import { Slate, Editable, withReact, RenderLeafProps } from "slate-react";
 import { withIOCollaboration, useCursor } from "@slate-collaborative/client";
+import randomColor from "randomcolor";
+import Caret from "./Caret";
 
 export interface ClayProps {
   className?: string;
@@ -20,6 +22,16 @@ const Clay: React.FC<ClayProps> = ({ className }) => {
 
   const [isOnline, setOnlineState] = React.useState(false);
 
+  const color = React.useMemo(
+    () =>
+      randomColor({
+        luminosity: "dark",
+        format: "rgba",
+        alpha: 1,
+      }),
+    []
+  );
+
   const editor = React.useMemo(() => {
     const slateEditor = withReact(withHistory(createEditor()));
 
@@ -33,6 +45,8 @@ const Clay: React.FC<ClayProps> = ({ className }) => {
       docId: "/" + slug,
       cursorData: {
         name,
+        color,
+        alphaColor: color.slice(0, -2) + "0.2)",
       },
       url: `${origin}/${slug}`,
       connectOpts: {
@@ -57,14 +71,55 @@ const Clay: React.FC<ClayProps> = ({ className }) => {
 
   const { decorate } = useCursor(editor);
 
+  const renderLeaf = React.useCallback(
+    (props: RenderLeafProps) => <Leaf {...props} />,
+    [decorate]
+  );
+
+  console.log("huh wtf");
+
   return (
     <Slate
       editor={editor}
       value={value}
       onChange={(newValue) => setValue(newValue)}
     >
-      <Editable decorate={decorate} />
+      <Editable decorate={decorate} renderLeaf={renderLeaf} />
     </Slate>
+  );
+};
+
+const Leaf: React.FC<RenderLeafProps> = ({ attributes, children, leaf }) => {
+  if (leaf.bold) {
+    children = <strong>{children}</strong>;
+  }
+
+  if (leaf.code) {
+    children = <code>{children}</code>;
+  }
+
+  if (leaf.italic) {
+    children = <em>{children}</em>;
+  }
+
+  if (leaf.underline) {
+    children = <u>{children}</u>;
+  }
+  console.log("leaf", leaf);
+
+  return (
+    <span
+      {...attributes}
+      style={
+        {
+          position: "relative",
+          backgroundColor: leaf.alphaColor,
+        } as any
+      }
+    >
+      {leaf.isCaret ? <Caret {...(leaf as any)} /> : null}
+      {children}
+    </span>
   );
 };
 
