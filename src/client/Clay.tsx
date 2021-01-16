@@ -16,7 +16,7 @@ const Clay: React.FC<ClayProps> = ({ className }) => {
   const [value, setValue] = React.useState<Node[]>([
     {
       type: "paragraph",
-      children: [{ text: "A line of text in a paragraph." }],
+      children: [{ text: "Loading..." }],
     },
   ]);
 
