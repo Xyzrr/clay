@@ -35,7 +35,8 @@ const Clay: React.FC<ClayProps> = ({ className }) => {
   const editor = React.useMemo(() => {
     const slateEditor = withReact(withHistory(createEditor()));
 
-    const origin = "https://clay-server.herokuapp.com";
+    // const origin = "https://clay-server.herokuapp.com";
+    const origin = "http://localhost:5000";
 
     const slug = "sluggy";
 
