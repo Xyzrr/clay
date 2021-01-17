@@ -2,7 +2,13 @@ import * as S from "./Clay.styles";
 import React from "react";
 import { createEditor, Node } from "slate";
 import { withHistory } from "slate-history";
-import { Slate, Editable, withReact, RenderLeafProps } from "slate-react";
+import {
+  Slate,
+  Editable,
+  withReact,
+  RenderLeafProps,
+  RenderElementProps,
+} from "slate-react";
 import { withIOCollaboration, useCursor } from "@slate-collaborative/client";
 import randomColor from "randomcolor";
 import Caret from "./Caret";
@@ -35,8 +41,8 @@ const Clay: React.FC<ClayProps> = ({ className }) => {
   const editor = React.useMemo(() => {
     const slateEditor = withReact(withHistory(createEditor()));
 
-    // const origin = "https://clay-server.herokuapp.com";
-    const origin = "http://localhost:5000";
+    const origin = "https://clay-server.herokuapp.com";
+    // const origin = "http://localhost:5000";
 
     const slug = "sluggy";
 
@@ -77,7 +83,9 @@ const Clay: React.FC<ClayProps> = ({ className }) => {
     [decorate]
   );
 
-  console.log("huh wtf");
+  const renderElement = React.useCallback((props: RenderElementProps) => {
+    return <Paragraph {...props}></Paragraph>;
+  }, []);
 
   return (
     <Slate
@@ -85,7 +93,11 @@ const Clay: React.FC<ClayProps> = ({ className }) => {
       value={value}
       onChange={(newValue) => setValue(newValue)}
     >
-      <Editable decorate={decorate} renderLeaf={renderLeaf} />
+      <Editable
+        decorate={decorate}
+        renderLeaf={renderLeaf}
+        renderElement={renderElement}
+      />
     </Slate>
   );
 };
@@ -122,6 +134,14 @@ const Leaf: React.FC<RenderLeafProps> = ({ attributes, children, leaf }) => {
       {children}
     </span>
   );
+};
+
+const Paragraph: React.FC<RenderElementProps> = ({
+  attributes,
+  element,
+  children,
+}) => {
+  return <S.Paragraph {...attributes}>{children}</S.Paragraph>;
 };
 
 export default Clay;
