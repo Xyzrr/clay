@@ -118,7 +118,6 @@ const Leaf: React.FC<RenderLeafProps> = ({ attributes, children, leaf }) => {
   if (leaf.underline) {
     children = <u>{children}</u>;
   }
-  console.log("leaf", leaf);
 
   return (
     <span
